@@ -1,0 +1,33 @@
+.task {
+  border-top: 1px solid #8d9196;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+
+  .left-text {
+    display: flex;
+    align-items: center;
+  }
+
+  .text {
+    width: 400px;
+    padding-left: 10px;
+  }
+}
+
+.done {
+  color: #8d9196;
+}
+
+.btn-container {
+  width: 40%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  p:hover {
+    cursor: pointer;
+  }
+}
