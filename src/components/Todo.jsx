@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "./Todo.scss";
-import { Error } from "./Error";
+import Error from "./Error";
 import Task from "./Task";
 
-export function Todo() {
-  const [id, setId] = useState(0);
+export default function Todo() {
+  const [itemId, setItemId] = useState(1);
 
   const [tasks, setTasks] = useState([]);
 
@@ -40,52 +40,73 @@ export function Todo() {
 
   const onClickHandle = () => {
     if (isValueValid(currValue)) {
-      setTasks([...tasks, { id: id, name: currValue, isDone: false }]);
+      setTasks([
+        ...tasks,
+        { id: itemId, name: currValue, isDone: false, isSelected: false },
+      ]);
       setCurrValue("");
       setError("");
-      setId(id + 1);
+      setItemId(itemId + 1);
     }
   };
 
-  const onCheck = (id) => {
-    let newTasks = [...tasks]; //shallow copy vs deep copy?!
+  //should i combine those functions(onDone & onSelect)?
+  const onSelectOrDone = (id, done) => {
+    let newTasks = [...tasks];
 
     let index = newTasks.findIndex((el) => el.id === id);
-    newTasks[index].isDone = !tasks[index].isDone;
+    if (done) {
+      newTasks[index].isDone = !tasks[index].isDone;
+    } else {
+      newTasks[index].isSelected = !tasks[index].isSelected;
+    }
 
     setTasks(newTasks);
   };
 
-  const moveDown = (id) => {
+  //Done
+  // const onDone = (id) => {
+  //   let newTasks = [...tasks]; //shallow copy vs deep copy
+
+  //   let index = newTasks.findIndex((el) => el.id === id);
+  //   newTasks[index].isDone = !tasks[index].isDone;
+
+  //   setTasks(newTasks);
+  // };
+
+  //Selected ~ checked
+  // const onSelect = (id) => {
+  //   let newTasks = [...tasks];
+
+  //   let index = newTasks.findIndex((el) => el.id === id);
+  //   newTasks[index].isSelected = !tasks[index].isSelected;
+
+  //   setTasks(newTasks);
+  //   console.log(tasks);
+  // };
+
+  const move = (id, moveDown) => {
     let index = tasks.findIndex((el) => el.id === id);
+    let swapIndex;
 
-    let swapIndex = index + 1;
-    if (swapIndex === tasks.length) {
-      swapIndex = 0;
+    if (moveDown) {
+      swapIndex = index + 1;
+      if (swapIndex === tasks.length) {
+        swapIndex = 0;
+      }
+    } else {
+      swapIndex = index - 1;
+      if (index === 0) {
+        swapIndex = tasks.length - 1;
+      }
     }
-    move(index, swapIndex);
-  };
 
-  const moveUp = (id) => {
-    let index = tasks.findIndex((el) => el.id === id);
-    let swapIndex = index - 1;
-    if (index === 0) {
-      swapIndex = tasks.length - 1;
-    }
-    move(index, swapIndex);
-  };
-
-  const move = (index, swapIndex) => {
-    console.log("move");
     let temp = tasks[index];
     let tempTasks = [...tasks];
     tempTasks[index] = tempTasks[swapIndex];
     tempTasks[swapIndex] = temp;
 
-    console.log(tempTasks);
     setTasks(tempTasks);
-
-    console.log(tasks);
   };
 
   const onEdit = (id) => {
@@ -142,6 +163,14 @@ export function Todo() {
         >
           Delete Not Done
         </button>
+        <button
+          className="btn-2"
+          onClick={() =>
+            setTasks(tasks.filter((el) => el.isSelected === false))
+          }
+        >
+          Delete Selected
+        </button>
       </div>
       <p className="counter">
         Completed tasks : {tasks.filter((el) => el.isDone === true).length} /{" "}
@@ -168,20 +197,23 @@ export function Todo() {
         )}
 
         <ul>
-          {tasks.map((task, index) => (
-            <li key={"task" + index}>
+          {tasks.map((task) => (
+            <li key={"task" + task.id}>
               <Task
                 task={task}
-                onCheck={(id) => onCheck(id)}
+                onCheck={(id) => {
+                  onSelectOrDone(id, false);
+                }}
+                onDone={(id) => onSelectOrDone(id, true)}
                 onEdit={(id) => onEdit(id)}
                 onDeleteTask={(id) =>
                   setTasks(tasks.filter((el) => el.id !== id))
                 }
                 moveUp={(id) => {
-                  moveUp(id);
+                  move(id, false);
                 }}
                 moveDown={(id) => {
-                  moveDown(id);
+                  move(id, true);
                 }}
               />
             </li>

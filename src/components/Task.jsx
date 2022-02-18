@@ -7,7 +7,6 @@ function Task(props) {
       <div className="left-text">
         <input
           type="checkbox"
-          defaultChecked={props.task.isDone}
           onChange={() => {
             props.onCheck(props.task.id);
           }}
@@ -16,6 +15,14 @@ function Task(props) {
       </div>
 
       <div className="btn-container">
+        <p
+          className="button"
+          onClick={() => {
+            props.onDone(props.task.id);
+          }}
+        >
+          Done
+        </p>
         <p
           className="button"
           onClick={() => {
