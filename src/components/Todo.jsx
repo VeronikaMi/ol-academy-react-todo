@@ -92,12 +92,12 @@ export default function Todo() {
     if (moveDown) {
       swapIndex = index + 1;
       if (swapIndex === tasks.length) {
-        swapIndex = 0;
+        return;
       }
     } else {
       swapIndex = index - 1;
       if (index === 0) {
-        swapIndex = tasks.length - 1;
+        return;
       }
     }
 
